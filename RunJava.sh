@@ -16,7 +16,24 @@
 
 clear 
 
+# CURRENT_DIR=$(pwd) # get current directory
+# ROOT_DIR=${CURRENT_DIR%/src} # current directory whithout except src
+# cd $ROOT_DIR # go to root project
+
+
+CURRENT_DIR=$(pwd) # get the current directory
+KEYWORD="src" 
+ROOT_DIR="$CURRENT_DIR"
+
+while [[ "$ROOT_DIR" == *"$KEYWORD"* ]] # while ROOT_DIR contains the keyword KEYWORD, remove the last directory
+do
+  ROOT_DIR=$(dirname "$ROOT_DIR")
+done
+
+cd $ROOT_DIR
+
 OLDIFS=$IFS # "backup" IFS
+
 touch tempfile.txt # create temporary file and storage every file's name from src directory
 ls src > tempfile.txt # redirect the listed files to the temporary file
 
