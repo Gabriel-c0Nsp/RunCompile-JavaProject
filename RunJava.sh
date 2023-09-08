@@ -10,16 +10,11 @@
 # Description: Search for packages or files.java, compile and execute  #
 # Java code from the terminal.                                         #
 #                                                                      #        
-# Example: RunJava.sh | runjava (com alias)                            #
+# Example: RunJava.sh | runjava (alias)                                #
 #                                                                      #     
 ########################################################################
 
 clear 
-
-# CURRENT_DIR=$(pwd) # get current directory
-# ROOT_DIR=${CURRENT_DIR%/src} # current directory whithout except src
-# cd $ROOT_DIR # go to root project
-
 
 CURRENT_DIR=$(pwd) # get the current directory
 KEYWORD="src" 
@@ -33,7 +28,6 @@ done
 cd $ROOT_DIR
 
 OLDIFS=$IFS # "backup" IFS
-
 touch tempfile.txt # create temporary file and storage every file's name from src directory
 ls src > tempfile.txt # redirect the listed files to the temporary file
 
@@ -81,6 +75,7 @@ do
   fi
 
 done < tempfile.txt
+
 
 IFS=$OLDIFS
 rm tempfile.txt # remove temporary file
