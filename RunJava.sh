@@ -74,3 +74,30 @@ get_type_of_project() {
 }
 
 get_type_of_project
+
+# check if there is more than one .java file in the directory (in case of no package)
+multiple_files=false
+
+if [[ $type_of_project == "no_package" ]]; then
+  java_files_count=$(find . -maxdepth 1 -type f -name "*.java" | wc -l)
+  if (( java_files_count > 1 )); then
+    multiple_files=true
+  else
+    one_file=false
+  fi
+fi
+echo $multiple_files
+
+# functions to compile and execute the project
+gradle_run() {
+  go_to_root
+
+  gradle build
+  gradle run
+}
+
+maven_run() {
+  go_to_root
+
+  mvn spring-boot:run
+}
