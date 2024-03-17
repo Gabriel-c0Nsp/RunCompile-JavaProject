@@ -19,15 +19,30 @@
 clear
 
 type_of_project=""
-# options: "with_package", "no_package", "maven", "gradle"
+# options: "simple_source", "with_package", "no_package", "gradle", "maven"
+
+go_to_source() {
+  local found=0
+
+  while [[ $found -ne 1 ]]; do
+    if [[ -d "src" ]]; then
+      cd "src"
+      found=1
+    else 
+      if [[ "$(pwd)" != "$HOME" ]]; then
+        cd ..
+      else # then there is no src folder in the project
+        break
+      fi
+    fi
+  done 
+}
 
 go_to_root() {
   local found=0
 
   while [[ $found -ne 1 ]]; do
     if [[ -d "src" ]]; then
-      echo "$(pwd)"
-      cd "src"
       found=1
     else 
       if [[ "$(pwd)" != "$HOME" ]]; then
@@ -86,18 +101,27 @@ if [[ $type_of_project == "no_package" ]]; then
     one_file=false
   fi
 fi
-echo $multiple_files
+
+# check if there packages in the project
+if [[ $type_of_project == "with_package" ]]; then
+  go_to_root
+
+  if ! [[ -n "$(find . -mindepth 1 -maxdepth 1 -type d)" ]]; then
+    type_of_project="simple_source"
+  fi
+
+fi
 
 # functions to compile and execute the project
 gradle_run() {
-  go_to_root
+  go_to_source
 
   gradle build
   gradle run
 }
 
 maven_run() {
-  go_to_root
+  go_to_source
 
   mvn spring-boot:run
 }
