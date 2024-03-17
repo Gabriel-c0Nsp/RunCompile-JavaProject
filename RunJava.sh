@@ -125,3 +125,42 @@ maven_run() {
 
   mvn spring-boot:run
 }
+
+one_file_run() {
+  java *.java 
+}
+
+multiple_files_run() {
+  local files=()
+  local i=1
+
+# lists the .java files in the current directory and removes the prefix './' and the extension '.java'
+  for file in *.java; do
+    file_name=$(basename "$file" .java)
+    files+=("$file_name")
+  done
+
+  # menu for the user 
+  echo "Choose the file you want to execute: "
+  for file_name in "${files[@]}"; do
+    echo "$i) $file_name"
+    ((i++))
+  done
+
+  echo
+  echo -n "--> "
+  read choice
+
+  # Verifica se a entrada do usuário é válida
+  if [[ "$choice" =~ ^[1-${#files[@]}]$ ]]; then
+    desired_file="${files[$((choice - 1))]}"
+    java "$desired_file".java
+  else
+    clear
+    echo "Invalid choice. Please enter a number between 1 and ${#files[@]}"
+    echo
+    multiple_files_run
+  fi
+}
+
+multiple_files_run
