@@ -19,6 +19,7 @@
 clear
 
 type_of_project=""
+current_path=$(pwd)
 # options: "simple_source", "with_package", "no_package", "gradle", "maven"
 
 go_to_source() {
@@ -104,12 +105,10 @@ fi
 
 # check if there packages in the project
 if [[ $type_of_project == "with_package" ]]; then
-  go_to_root
-
+  go_to_source
   if ! [[ -n "$(find . -mindepth 1 -maxdepth 1 -type d)" ]]; then
     type_of_project="simple_source"
   fi
-
 fi
 
 # functions to compile and execute the project
@@ -162,6 +161,7 @@ multiple_files_run() {
     multiple_files_run
   fi
 }
+
 # contains the main method of the project
 find_main() {
   go_to_source
@@ -177,4 +177,27 @@ simple_source_run() {
   java -cp bin "$main_file"
 }
 
-simple_source_run
+with_package_run() {
+  go_to_root
+
+  local compile_command="javac -d bin "
+
+# Recursive function to traverse the directory tree
+  find_packages() {
+    local dir="$1"
+    for file in "$dir"/*; do
+      if [[ -f "$file" && "$file" == *.java ]]; then
+        compile_command+="$dir/*.java "
+      elif [[ -d "$file" ]]; then
+        find_packages "$file"
+      fi
+    done
+  }
+
+  find_packages .
+
+  #compile and execute process
+  main_file=$(find_main)
+  $compile_command
+  java -cp bin "$main_file"
+}
