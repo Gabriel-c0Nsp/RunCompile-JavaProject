@@ -151,7 +151,7 @@ multiple_files_run() {
   echo -n "--> "
   read choice
 
-  # Verifica se a entrada do usuário é válida
+  # check if the user input is valid
   if [[ "$choice" =~ ^[1-${#files[@]}]$ ]]; then
     desired_file="${files[$((choice - 1))]}"
     java "$desired_file".java
@@ -162,5 +162,19 @@ multiple_files_run() {
     multiple_files_run
   fi
 }
+# contains the main method of the project
+find_main() {
+  go_to_source
 
-multiple_files_run
+  main_file="src/$(grep -rl "public static void main" . | sed 's|^./||')"
+  echo $main_file
+}
+
+simple_source_run() {
+  main_file=$(find_main)
+
+  javac -d bin src/*.java
+  java -cp bin "$main_file"
+}
+
+simple_source_run
