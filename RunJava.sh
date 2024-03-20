@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # THIS PROJECT IS NOT USABLE YET. FOR STABLE VERSION, USE PREVOIUS VERSIONS
 
@@ -7,7 +7,7 @@
 # RunJava.sh: Compile and execute Java project                         #
 #                                                                      # 
 # Author: Gabriel Silva Aires (gabrielsilvaaires@gmail.com)            #    
-# Date: 09/03/2023                                                     # 
+# Date: 03/09/2023                                                     # 
 #                                                                      #      
 # Description: Search for packages or files.java, compile and execute  #
 # Java code from the terminal.                                         #
@@ -20,7 +20,6 @@ clear
 
 type_of_project=""
 current_path=$(pwd)
-# options: "simple_source", "with_package", "no_package", "gradle", "maven"
 
 go_to_source() {
   local found=0
@@ -84,7 +83,7 @@ get_type_of_project() {
 
   # check if type_of_project is empty
   if [[ -z $type_of_project ]]; then
-    echo "This project is not a Java project"
+    echo "This is not a Java project"
   fi
   cd $current_path
 }
@@ -114,14 +113,12 @@ fi
 # functions to compile and execute the project
 gradle_run() {
   go_to_source
-
   gradle build
   gradle run
 }
 
 maven_run() {
   go_to_source
-
   mvn spring-boot:run
 }
 
@@ -153,6 +150,7 @@ multiple_files_run() {
   # check if the user input is valid
   if [[ "$choice" =~ ^[1-${#files[@]}]$ ]]; then
     desired_file="${files[$((choice - 1))]}"
+    clear
     java "$desired_file".java
   else
     clear
@@ -167,10 +165,13 @@ find_main() {
   go_to_source
 
   main_file="src/$(grep -rl "public static void main" . | sed 's|^./||')"
-  echo $main_file
+  echo "$main_file"
 }
 
+
 simple_source_run() {
+  go_to_root
+
   main_file=$(find_main)
 
   javac -d bin src/*.java
@@ -201,3 +202,21 @@ with_package_run() {
   $compile_command
   java -cp bin "$main_file"
 }
+
+if [[ $type_of_project == "gradle" ]]; then
+  gradle_run
+elif [[ $type_of_project == "maven" ]]; then
+  maven_run
+elif [[ $type_of_project == "no_package" ]]; then
+  if [[ $multiple_files == true ]]; then
+    multiple_files_run
+  else
+    one_file_run
+  fi
+elif [[ $type_of_project == "simple_source" ]]; then
+  simple_source_run
+elif [[ $type_of_project == "with_package" ]]; then
+  with_package_run
+fi
+
+cd $current_path

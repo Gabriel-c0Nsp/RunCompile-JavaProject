@@ -1,2 +1,2 @@
 # RunCompile-JavaProject
-Criação de um script em Shell que compile e rode qualquer projeto Java a partir do terminal
+Creation of a Shell script that compiles and runs different types of Java projects from the terminal
