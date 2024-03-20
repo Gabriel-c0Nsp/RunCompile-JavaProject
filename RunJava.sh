@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# THIS PROJECT IS NOT USABLE YET. FOR STABLE VERSION, USE PREVOIUS VERSIONS
-
 ########################################################################
 #                                                                      #
 # RunJava.sh: Compile and execute Java project                         #
