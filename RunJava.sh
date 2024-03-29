@@ -116,7 +116,7 @@ gradle_run() {
 }
 
 maven_run() {
-  go_to_source
+  go_to_root
   mvn spring-boot:run
 }
 
