@@ -108,6 +108,16 @@ if [[ $type_of_project == "with_package" ]]; then
   fi
 fi
 
+# check if it's a SpringBoot project
+if [[ $type_of_project == "maven" ]]; then
+  go_to_root
+  if grep -q "spring-boot-starter-parent" pom.xml; then 
+    type_of_project="spring"
+  else
+    type_of_project="maven"
+  fi
+fi
+
 # functions to compile and execute the project
 gradle_run() {
   go_to_source
@@ -115,9 +125,26 @@ gradle_run() {
   gradle run
 }
 
-maven_run() {
-  go_to_root
+spring_run() {
   mvn spring-boot:run
+}
+
+maven_run() {
+  mvn compile
+  main_class=$(find_main)
+  main_class_name=$(basename "$main_class" .java)
+
+  # convert the path to package format
+  package_name=$(dirname "$main_class" | sed 's|src/||;s|/|.|g')
+
+  full_main_class="${package_name}.${main_class_name}"
+
+  # If the name of the main class is "main", then use only the package_name
+  if [[ "$main_class_name" == "main" ]]; then
+    full_main_class="$package_name"
+  fi
+
+  mvn exec:java -Dexec.mainClass="${full_main_class/main.java./}"
 }
 
 one_file_run() {
@@ -203,6 +230,8 @@ with_package_run() {
 
 if [[ $type_of_project == "gradle" ]]; then
   gradle_run
+elif [[ $type_of_project == "spring" ]]; then
+  spring_run
 elif [[ $type_of_project == "maven" ]]; then
   maven_run
 elif [[ $type_of_project == "no_package" ]]; then
@@ -218,3 +247,4 @@ elif [[ $type_of_project == "with_package" ]]; then
 fi
 
 cd $current_path
+echo $type_of_project
