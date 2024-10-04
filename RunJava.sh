@@ -247,4 +247,3 @@ elif [[ $type_of_project == "with_package" ]]; then
 fi
 
 cd $current_path
-echo $type_of_project
